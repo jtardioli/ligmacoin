@@ -5,22 +5,21 @@ pragma solidity 0.8.13;
 import "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
-error BeforeSaleStart();
-
+error BeforeAirdropStart();
 
 contract LigmaCoin is ERC20, Ownable {
 
-  struct SaleConfig {
+  struct AirdropConfig {
     uint128 startingSupply;
     uint64 startTime;
   }
 
-  SaleConfig public saleConfig;
+  AirdropConfig public airdropConfig;
 
 
   constructor() ERC20("Ligma", "LGMA") {
-    saleConfig.startingSupply = 69420 ether;
-    saleConfig.startTime = 1650844800; // April 25, 2020 - 12am
+    airdropConfig.startingSupply = 69420 ether;
+    airdropConfig.startTime = 1650844800; // April 25, 2020 - 12am
   }
 
   function transfer(address to, uint256 amount) public virtual override returns (bool) {
@@ -47,13 +46,11 @@ contract LigmaCoin is ERC20, Ownable {
     external 
     onlyOwner 
   {
-    SaleConfig memory config = saleConfig;
+    AirdropConfig memory config = airdropConfig;
     uint _startingSupply = uint(config.startingSupply);
     uint _startTime = uint(config.startTime);
 
-    if (block.timestamp < _startTime) revert BeforeSaleStart();
-
-    
+    if (block.timestamp < _startTime) revert BeforeAirdropStart();
 
     _mint(msg.sender, _startingSupply * 10 / 100);
 
@@ -61,10 +58,8 @@ contract LigmaCoin is ERC20, Ownable {
     
     for (uint256 i = 0; i < addresses.length; ++i) {
       _mint(addresses[i],  airdropAmount);
-  
     }
 
   }
-
 
 }
